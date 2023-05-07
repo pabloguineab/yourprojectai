@@ -7,11 +7,11 @@ from langchain.chains import LLMChain, SequentialChain
 from langchain.memory import ConversationBufferMemory
 from langchain.utilities import WikipediaAPIWrapper 
 
-os.environ['OPENAI_API_KEY'] = st.secrets["apikey"]
+os.environ['OPENAI_API_KEY'] = apikey
 
 # App framework
-st.title('🦜🔗 Generador de TFG')
-prompt = st.text_input('Cuentanos sobre tu proyecto... ') 
+st.title('🦜🔗 YouTube GPT Creator')
+prompt = st.text_input('Plug in your prompt here') 
 
 # Prompt templates
 title_template = PromptTemplate(
