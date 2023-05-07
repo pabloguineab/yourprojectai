@@ -10,18 +10,18 @@ from langchain.utilities import WikipediaAPIWrapper
 os.environ['OPENAI_API_KEY'] =  st.secrets["apikey"]
 
 # App framework
-st.title('🦜🔗 YouTube GPT Creator')
+st.title('🦜🔗 Final undergraduate Project Generator')
 prompt = st.text_input('Plug in your prompt here') 
 
 # Prompt templates
 title_template = PromptTemplate(
     input_variables = ['topic'], 
-    template='write me a youtube video title about {topic}'
+    template='write me a project degree title about {topic}'
 )
 
 script_template = PromptTemplate(
     input_variables = ['title', 'wikipedia_research'], 
-    template='write me a youtube video script based on this title TITLE: {title} while leveraging this wikipedia reserch:{wikipedia_research} '
+    template='write me an introduction section for my project based on this title TITLE: {title} while leveraging this wikipedia reserch:{wikipedia_research} '
 )
 
 # Memory 
