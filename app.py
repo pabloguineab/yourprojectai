@@ -54,7 +54,7 @@ if prompt_title and prompt_index:
     # Generate project based on user inputs
     title = title_chain.run(topic=prompt_title)
     index = index_chain.run(topic=prompt_index)
-    wiki_research = wiki.run(prompt=prompt_title) 
+    wiki_research = wiki.run(prompt)  
     script = script_chain.run(title=title, index=index, wikipedia_research=wiki_research)
     
     # Display project details
