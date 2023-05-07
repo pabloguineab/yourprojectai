@@ -48,7 +48,7 @@ if prompt:
     with st.expander('Title History'): 
         st.info(title_memory.buffer)
 
-    with st.expander('Script History'): 
+    with st.expander('Introduction History'): 
         st.info(script_memory.buffer)
 
     with st.expander('Wikipedia Research'): 
