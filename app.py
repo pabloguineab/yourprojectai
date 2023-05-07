@@ -75,7 +75,7 @@ if prompt_title and all(sections):
     title = title_chain.run(topic=prompt_title)
     index = index_chain.run(sections=[(str(section[0]), str(section[1])) for section in sections])
     wiki_research = wiki.run(prompt_title)
-        scripts = [script_chain.run(title=title, index=index, wikipedia_research=wiki_research) for script_chain, (section_title, section_index) in zip(script_chains, sections)]
+    scripts = [script_chain.run(title=title, index=index, wikipedia_research=wiki_research) for script_chain, (section_title, section_index) in zip(script_chains, sections)]
     
     # Display project details
     st.write("Generated Project:")
