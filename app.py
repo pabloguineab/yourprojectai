@@ -51,11 +51,13 @@ wiki = WikipediaAPIWrapper()
 # Show stuff to the screen if there's a prompt
 if prompt: 
     title = title_chain.run(topic=prompt)
-    title_memory.save_context(prompt, title)  # Save 'title' to memory
     index = index_chain.run(topic=prompt)
     wiki_research = wiki.run(prompt) 
     script = script_chain.run(title=title, index=index, wikipedia_research=wiki_research)
-
+    title_memory.save_context({prompt: title})  # Save 'title' to memory
+    index_memory.save_context({title: index})  # Save 'index' to memory
+    script_memory.save_context({title: script})  # Save 'script' to memory
+    
     st.write(title) 
     st.write(index)
     st.write(script) 
