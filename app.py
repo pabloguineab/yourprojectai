@@ -78,7 +78,7 @@ if prompt_title and prompt_index:
         section_index = section[1]
         
         # Generate the script content in patches
-        while len(current_script) < max_chars_per_patch:
+        while len(current_script) < max_chars_per_patch and len(current_script) < max_script_length:
             # Generate a part of the script
             partial_script = script_chain.run(title=title, index=index, section_title=section_title, section_index=section_index, wikipedia_research=wiki_research)
             
