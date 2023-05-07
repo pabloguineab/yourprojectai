@@ -54,9 +54,7 @@ if prompt:
     index = index_chain.run(topic=prompt)
     wiki_research = wiki.run(prompt) 
     script = script_chain.run(title=title, index=index, wikipedia_research=wiki_research)
-    index_memory.save_context({"title": index})  # Save 'index' to memory
-    script_memory.save_context({"title": script})  # Save 'script' to memory
-    
+
     st.write(title) 
     st.write(index)
     st.write(script) 
