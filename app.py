@@ -33,17 +33,19 @@ title_memory = ConversationBufferMemory(input_key='topic', memory_key='chat_hist
 index_memory = ConversationBufferMemory(input_key='title', memory_key='chat_history')
 script_memory = ConversationBufferMemory(input_key='title', memory_key='chat_history')
 
+
 # Llms
 llm = OpenAI(temperature=0.9) 
 title_chain = LLMChain(llm=llm, prompt=title_template, verbose=True, output_key='title', memory=title_memory)
 index_chain = LLMChain(llm=llm, prompt=index_template, verbose=True, output_key='index', memory=index_memory)
-script_chain = LLMChain(llm=llm, prompt=script_template, verbose=True, output_key='script', memory=script_memory)
+script_chain = LLMChain(llm=llm, prompt=script_template, verbose=True, output_key='script', memory=script_memory, input_variables=['title', 'index', 'wikipedia_research'])
 
 wiki = WikipediaAPIWrapper()
 
 # Show stuff to the screen if there's a prompt
 if prompt: 
     title = title_chain.run(topic=prompt)
+    title_memory.save_context(prompt, title)  # Save 'title' to memory
     index = index_chain.run(topic=prompt)
     wiki_research = wiki.run(prompt) 
     script = script_chain.run(title=title, index=index, wikipedia_research=wiki_research)
