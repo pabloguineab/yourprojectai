@@ -23,7 +23,7 @@ for i in range(num_sections):
     section_title = st.text_input(f'Enter title for section {i+1}:')
     section_index = st.text_input(f'Enter index for section {i+1}:')
     section_template = PromptTemplate(
-        input_variables=['title', 'index', 'wikipedia_research'],
+        input_variables=['title', 'index', 'wiki_research'],
         template='write me a section for my project with title: {title}, index: {index}, and leveraging this wikipedia research: {wikipedia_research}'
     )
     sections.append((section_title, section_index))
