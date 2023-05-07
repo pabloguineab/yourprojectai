@@ -13,8 +13,16 @@ os.environ['OPENAI_API_KEY'] = st.secrets["apikey"]
 st.title('🦜🔗 Final undergraduate Project Generator')
 
 # User inputs
+# User inputs
 prompt_title = st.text_input('Enter the project title:')
 prompt_index = st.text_input('Enter the project index:')
+num_sections = st.number_input('Enter the number of sections:', min_value=1, value=3, step=1)
+
+sections = []
+for i in range(num_sections):
+    section_title = st.text_input(f'Enter title for section {i+1}:')
+    section_index = st.text_input(f'Enter index for section {i+1}:')
+    sections.append((section_title, section_index))
 
 # Check if both inputs are provided
 if prompt_title and prompt_index:
@@ -54,22 +62,27 @@ if prompt_title and prompt_index:
     # Generate project based on user inputs
     title = title_chain.run(topic=prompt_title)
     index = index_chain.run(topic=prompt_index)
-    wiki_research = wiki.run(prompt_title)  
-    script = script_chain.run(title=title, index=index, wikipedia_research=wiki_research)
+    wiki_research = wiki.run(prompt_title)
+    scripts = []
+    for section in sections:
+        section_title, section_index = section
+        section_script = script_chain.run(title=section_title, index=section_index, wikipedia_research=wiki_research)
+        scripts.append(section_script)
     
     # Display project details
     st.write("Generated Project:")
     st.write("Title:", title)
     st.write("Index:", index)
-    st.write("Script:", script)
-    
+    for i, section_script in enumerate(scripts):
+        st.write(f"Section {i+1} Script:", section_script)
+
     # Display history
     with st.expander('Title History'): 
         st.info(title_memory.buffer)
-   
+
     with st.expander('Index History'): 
         st.info(index_memory.buffer)
-        
+
     with st.expander('Introduction History'): 
         st.info(script_memory.buffer)
 
