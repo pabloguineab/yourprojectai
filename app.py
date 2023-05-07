@@ -30,7 +30,7 @@ script_template = PromptTemplate(
 
 # Memory 
 title_memory = ConversationBufferMemory(input_key='topic', memory_key='chat_history')
-index_memory = ConversationBufferMemory(input_key='title', memory_key='chat_history')
+index_memory = ConversationBufferMemory(input_key='topic', memory_key='chat_history')
 script_memory = ConversationBufferMemory(input_key='title', memory_key='chat_history')
 
 
