@@ -19,7 +19,7 @@ title_template = PromptTemplate(
     template='write me a project degree title about {topic}'
 )
 index_template = PromptTemplate(
-    input_variables = ['topic', 'title'], 
+    input_variables = ['topic'], 
     template='write me an extended index project degree  about {topic}'
 )
 
