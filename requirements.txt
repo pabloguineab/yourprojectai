@@ -1,2 +1,2 @@
 langchain
-open ai
+openai
