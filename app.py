@@ -73,8 +73,11 @@ if prompt_title and prompt_index:
     st.write("Generated Project:")
     st.write("Title:", title)
     st.write("Index:", index)
+
+    # Display sections in expanders
     for i, section_script in enumerate(scripts):
-        st.write(f"Section {i+1} Script:", section_script)
+        with st.expander(f"Section {i+1}"):
+            st.write(section_script)
 
     # Display history
     with st.expander('Title History'): 
