@@ -13,16 +13,8 @@ os.environ['OPENAI_API_KEY'] = st.secrets["apikey"]
 st.title('🦜🔗 Final undergraduate Project Generator')
 
 # User inputs
-# User inputs
 prompt_title = st.text_input('Enter the project title:')
 prompt_index = st.text_input('Enter the project index:')
-num_sections = st.number_input('Enter the number of sections:', min_value=1, value=3, step=1)
-
-sections = []
-for i in range(num_sections):
-    section_title = st.text_input(f'Enter title for section {i+1}:')
-    section_index = st.text_input(f'Enter index for section {i+1}:')
-    sections.append((section_title, section_index))
 
 # Check if both inputs are provided
 if prompt_title and prompt_index:
@@ -39,11 +31,16 @@ if prompt_title and prompt_index:
         input_variables=['title', 'index', 'wikipedia_research'], 
         template='write me an introduction section for my project based on this title TITLE: {title} and this index: {index} while leveraging this wikipedia research: {wikipedia_research}'
     )
+    section_template = PromptTemplate(
+        input_variables=['title', 'index', 'wikipedia_research', 'previous_sections'],
+        template='write me a section for my project with the following title: {title}, index: {index}, wikipedia research: {wikipedia_research}, and the previous sections: {previous_sections}'
+    )
     
     # Memory 
     title_memory = ConversationBufferMemory(input_key='topic', memory_key='chat_history')
     index_memory = ConversationBufferMemory(input_key='topic', memory_key='chat_history')
     script_memory = ConversationBufferMemory(input_key='title', memory_key='chat_history')
+    section_memory = ConversationBufferMemory(input_key='previous_sections', memory_key='chat_history')
     
     # Llms
     llm = OpenAI(temperature=0.9) 
@@ -56,60 +53,28 @@ if prompt_title and prompt_index:
         output_key='script',
         memory=script_memory
     )
+    section_chain = LLMChain(
+        llm=llm,
+        prompt=section_template,
+        verbose=True,
+        output_key='section',
+        memory=section_memory
+    )
     
     wiki = WikipediaAPIWrapper()
     
     # Generate project based on user inputs
     title = title_chain.run(topic=prompt_title)
     index = index_chain.run(topic=prompt_index)
-    wiki_research = wiki.run(prompt_title)
+    wiki_research = wiki.run(prompt_title)  
+    script = script_chain.run(title=title, index=index, wikipedia_research=wiki_research)
     
-    # Generate scripts for each section
-    sections = [
-        ("Section 1 Title", "Section 1 Index"),
-        ("Section 2 Title", "Section 2 Index"),
-        ("Section 3 Title", "Section 3 Index")
-    ]
-    
-    scripts = []
-    current_script = ""
-    for section in sections:
-        section_title = section[0]
-        section_index = section[1]
-        
-        # Generate the script content in patches
-    while len(current_script) < max_chars_per_patch and len(current_script) < max_script_length:
-            # Generate a part of the script
-            partial_script = script_chain.run(title=title, index=index, section_title=section_title, section_index=section_index, wikipedia_research=wiki_research)
-            
-            # Add the generated part to the current script
-            current_script += partial_script
-            
-            # Break the loop if the maximum character limit is reached
-            if len(current_script) >= max_chars_per_patch:
-                break
-        
-        # Add the current script to the list of scripts
-        scripts.append(current_script)
-        
-        current_script = ""
-
     # Display project details
     st.write("Generated Project:")
     st.write("Title:", title)
     st.write("Index:", index)
-
-    # Display each section in an expander
-    for i, section in enumerate(sections):
-        section_title = section[0]
-        section_index = section[1]
-        section_script = scripts[i]
-        
-        with st.expander(f"Section {i+1}: {section_title}"):
-            st.write("Section Index:", section_index)
-            st.write("Section Script:")
-            st.write(section_script)
-
+    st.write("Script:", script)
+    
     # Display history
     with st.expander('Title History'): 
         st.info(title_memory.buffer)
@@ -122,3 +87,28 @@ if prompt_title and prompt_index:
 
     with st.expander('Wikipedia Research'): 
         st.info(wiki_research)
+        
+    # User inputs for sections
+    num_sections = st.number_input("Enter the number of sections:", min_value=1, value=1, step=1)
+    
+    sections = []
+    for i in range(num_sections):
+        section_title = st.text_input(f"Enter the title for section {i+1}:")
+        section_index = st.text_input(f"Enter the index for section {i+1}:")
+        section_prompt = section_chain.prompt.render(
+            title=title,
+            index=index,
+            wikipedia_research=wiki_research,
+            previous_sections=sections
+        )
+        section_output = section_chain.llm.complete_prompt(section_prompt)
+        section = section_chain.extract_output(section_output)
+        sections.append((section_title, section_index, section))
+    
+    # Display sections
+    for i, section in enumerate(sections):
+        section_title, section_index, section_content = section
+        with st.expander(f"Section {i+1}: {section_title}"):
+            st.write("Index:", section_index)
+            st.write("Content:", section_content)
+
