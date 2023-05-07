@@ -63,29 +63,60 @@ if prompt_title and prompt_index:
     title = title_chain.run(topic=prompt_title)
     index = index_chain.run(topic=prompt_index)
     wiki_research = wiki.run(prompt_title)
-    scripts = []
-    for section in sections:
-        section_title, section_index = section
-        section_script = script_chain.run(title=section_title, index=section_index, wikipedia_research=wiki_research)
-        scripts.append(section_script)
     
+    # Generate scripts for each section
+    sections = [
+        ("Section 1 Title", "Section 1 Index"),
+        ("Section 2 Title", "Section 2 Index"),
+        ("Section 3 Title", "Section 3 Index")
+    ]
+    
+    scripts = []
+    current_script = ""
+    for section in sections:
+        section_title = section[0]
+        section_index = section[1]
+        
+        # Generate the script content in patches
+        while len(current_script) < max_chars_per_patch:
+            # Generate a part of the script
+            partial_script = script_chain.run(title=title, index=index, section_title=section_title, section_index=section_index, wikipedia_research=wiki_research)
+            
+            # Add the generated part to the current script
+            current_script += partial_script
+            
+            # Break the loop if the maximum character limit is reached
+            if len(current_script) >= max_chars_per_patch:
+                break
+        
+        # Add the current script to the list of scripts
+        scripts.append(current_script)
+        
+        current_script = ""
+
     # Display project details
     st.write("Generated Project:")
     st.write("Title:", title)
     st.write("Index:", index)
 
-    # Display sections in expanders
-    for i, section_script in enumerate(scripts):
-        with st.expander(f"Section {i+1}"):
+    # Display each section in an expander
+    for i, section in enumerate(sections):
+        section_title = section[0]
+        section_index = section[1]
+        section_script = scripts[i]
+        
+        with st.expander(f"Section {i+1}: {section_title}"):
+            st.write("Section Index:", section_index)
+            st.write("Section Script:")
             st.write(section_script)
 
     # Display history
     with st.expander('Title History'): 
         st.info(title_memory.buffer)
-
+   
     with st.expander('Index History'): 
         st.info(index_memory.buffer)
-
+        
     with st.expander('Introduction History'): 
         st.info(script_memory.buffer)
 
