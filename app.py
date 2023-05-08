@@ -72,12 +72,13 @@ if prompt_title and prompt_index:
     section_prompts = [s for s in section_prompts if len(s) > 0]
     previous_sections = ''
     for i, section_prompt in enumerate(section_prompts):
+        if '-' not in section_prompt:
+            st.warning(f"Section prompt '{section_prompt}' is invalid. Skipping...")
+            continue
         section_title, section_index = section_prompt.split('-', 1)
-        section_title = section_title.strip()
-        section_index = section_index.strip()
         section_output = section_chain.run(title=section_title, index=section_index, wikipedia_research=wiki_research, previous_sections=previous_sections)
         section_outputs.append(section_output)
-        previous_sections += section_output + '\n'
+        previous_sections += section_output['section'] + '\n'
 
         # Output generated project
         st.subheader('Project Degree')
