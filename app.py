@@ -87,28 +87,3 @@ if prompt_title and prompt_index:
 
     with st.expander('Wikipedia Research'): 
         st.info(wiki_research)
-        
-    # User inputs for sections
-    num_sections = st.number_input("Enter the number of sections:", min_value=1, value=1, step=1)
-    
-    sections = []
-    for i in range(num_sections):
-        section_title = st.text_input(f"Enter the title for section {i+1}:")
-        section_index = st.text_input(f"Enter the index for section {i+1}:")
-        section_prompt = section_chain.prompt.render(
-            title=title,
-            index=index,
-            wikipedia_research=wiki_research,
-            previous_sections=sections
-        )
-        section_output = section_chain.llm.complete_prompt(section_prompt)
-        section = section_chain.extract_output(section_output)
-        sections.append((section_title, section_index, section))
-    
-    # Display sections
-    for i, section in enumerate(sections):
-        section_title, section_index, section_content = section
-        with st.expander(f"Section {i+1}: {section_title}"):
-            st.write("Index:", section_index)
-            st.write("Content:", section_content)
-
