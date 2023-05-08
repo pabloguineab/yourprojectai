@@ -66,24 +66,14 @@ if prompt_title and prompt_index:
     # Generate project based on user inputs
     title = title_chain.run(topic=prompt_title)
     index = index_chain.run(topic=prompt_index)
-    wiki_research = wiki.run(prompt_title)  
-    script = script_chain.run(title=title, index=index, wikipedia_research=wiki_research)
-    
-    # Display project details
-    st.write("Generated Project:")
-    st.write("Title:", title)
-    st.write("Index:", index)
-    st.write("Script:", script)
-    
-    # Display history
-    with st.expander('Title History'): 
-        st.info(title_memory.buffer)
-   
-    with st.expander('Index History'): 
-        st.info(index_memory.buffer)
-        
-    with st.expander('Introduction History'): 
-        st.info(script_memory.buffer)
-
-    with st.expander('Wikipedia Research'): 
-        st.info(wiki_research)
+    wiki_research = wiki.run(prompt_title)
+    section_outputs = []
+    section_prompts = [s.strip() for s in prompt_index.split('\n')]
+    section_prompts = [s for s in section_prompts if len(s) > 0]
+    previous_sections = ''
+    for i, section_prompt in enumerate(section_prompts):
+        section_title = section_prompt.split('-')[0].strip()
+        section_index = section_prompt.split('-')[1].strip()
+        section_output = section_chain.run(title=section_title, index=section_index, wikipedia_research=wiki_research, previous_sections=previous_sections)
+        section_outputs.append(section_output)
+        previous_sections += f'\n{i+1}. {section_title}\n{section_index}\n{section_output}\n'
