@@ -72,8 +72,18 @@ if prompt_title and prompt_index:
     section_prompts = [s for s in section_prompts if len(s) > 0]
     previous_sections = ''
     for i, section_prompt in enumerate(section_prompts):
-        section_title = section_prompt.split('-')[0].strip()
-        section_index = section_prompt.split('-')[1].strip()
+        section_title, section_index = section_prompt.split('-', 1)
+        section_title = section_title.strip()
+        section_index = section_index.strip()
         section_output = section_chain.run(title=section_title, index=section_index, wikipedia_research=wiki_research, previous_sections=previous_sections)
         section_outputs.append(section_output)
-        previous_sections += f'\n{i+1}. {section_title}\n{section_index}\n{section_output}\n'
+        previous_sections += section_output + '\n'
+
+        # Output generated project
+        st.subheader('Project Degree')
+        st.write(f"# {title}")
+        st.write(index)
+        st.write(script_chain.run(title=title, index=index, wikipedia_research=wiki_research, previous_sections=previous_sections))
+        for i, section_output in enumerate(section_outputs):
+            st.write(f"## {section_prompts[i].split('-')[0].strip()}")
+            st.write(section_output)
