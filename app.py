@@ -10,7 +10,7 @@ from langchain.utilities import WikipediaAPIWrapper
 os.environ['OPENAI_API_KEY'] = st.secrets["apikey"]
 
 # App framework
-st.title('🦜🔗 Final undergraduate Project Generator')
+st.title('🦜🔗 Final Project Degree Generator')
 
 # User inputs
 prompt_title = st.text_input('Enter the project title:')
