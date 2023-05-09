@@ -1,3 +1,4 @@
+Este es el codigo de mi aplicacion ahora mismo. 
 # Bring in deps
 import os 
 import streamlit as st 
@@ -66,25 +67,24 @@ if prompt_title and prompt_index:
     # Generate project based on user inputs
     title = title_chain.run(topic=prompt_title)
     index = index_chain.run(topic=prompt_index)
-    wiki_research = wiki.run(prompt_title)
-    section_outputs = []
-    section_prompts = [s.strip() for s in prompt_index.split('\n')]
-    section_prompts = [s for s in section_prompts if len(s) > 0]
-    previous_sections = ''
-    for i, section_prompt in enumerate(section_prompts):
-        if '-' not in section_prompt:
-            st.warning(f"Section prompt '{section_prompt}' is invalid. Skipping...")
-            continue
-        section_title, section_index = section_prompt.split('-', 1)
-        section_output = section_chain.run(title=section_title, index=section_index, wikipedia_research=wiki_research, previous_sections=previous_sections)
-        section_outputs.append(section_output)
-        previous_sections += section_output['section'] + '\n'
+    wiki_research = wiki.run(prompt_title)  
+    script = script_chain.run(title=title, index=index, wikipedia_research=wiki_research)
+    
+    # Display project details
+    st.write("Generated Project:")
+    st.write("Title:", title)
+    st.write("Index:", index)
+    st.write("Script:", script)
+    
+    # Display history
+    with st.expander('Title History'): 
+        st.info(title_memory.buffer)
+   
+    with st.expander('Index History'): 
+        st.info(index_memory.buffer)
+        
+    with st.expander('Introduction History'): 
+        st.info(script_memory.buffer)
 
-        # Output generated project
-        st.subheader('Project Degree')
-        st.write(f"# {title}")
-        st.write(index)
-        st.write(script_chain.run(title=title, index=index, wikipedia_research=wiki_research, previous_sections=previous_sections))
-        for i, section_output in enumerate(section_outputs):
-            st.write(f"## {section_prompts[i].split('-')[0].strip()}")
-            st.write(section_output)
+    with st.expander('Wikipedia Research'): 
+        st.info(wiki_research)
