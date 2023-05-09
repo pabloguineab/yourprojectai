@@ -1,4 +1,3 @@
-Este es el codigo de mi aplicacion ahora mismo. 
 # Bring in deps
 import os 
 import streamlit as st 
